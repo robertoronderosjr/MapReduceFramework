@@ -7,6 +7,7 @@
 
 #ifndef FRAMEWORK_H_
 #define FRAMEWORK_H_
+#include <string.h>
 #include <string>
 #include <stdlib.h>
 #include <vector>
@@ -22,9 +23,31 @@ struct KVPair {
 	int value;
 };
 
-vector< vector<KVPair> > mapEmitters;
-map <string,
-vector<int> > buffer;
+struct Comparer {
+	bool operator()(const string& first, const string& second) const {
+		char* p;
+		long first_key = strtol(first.c_str(), &p, 10);
+		long second_key = strtol(second.c_str(), &p, 10);
+
+		if (*p) {
+			int case_in = strcasecmp(first.c_str(), second.c_str());
+			int case_s = strcmp(first.c_str(), second.c_str());
+
+			//When we have the same word but in different case
+		if(case_in == 0 && case_s != 0) {
+			return case_s < 0;
+		} else {
+			if (case_in < 0)
+			return true;
+		}
+	}
+	return first_key < second_key;
+}
+};
+
+vector<vector<KVPair> > mapEmitters;
+map<string,
+vector<int>, Comparer> buffer;
 string* start_keys;
 int* offsets;
 
@@ -55,3 +78,4 @@ void create_buffer();
 void generate_output(string output);
 
 #endif /* FRAMEWORK_H_ */
+
